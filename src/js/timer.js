@@ -1,36 +1,48 @@
-const refs = {
-  counter: document.querySelector('#timer-1'),
-  days: document.querySelector('span[data-value="days"]'),
-  hours: document.querySelector('span[data-value="hours"]'),
-  mins: document.querySelector('span[data-value="mins"]'),
-  secs: document.querySelector('span[data-value="secs"]'),
-};
+class CountdownTimer {
+  constructor(selector, targetDate) {
+    this.targetDate = targetDate;
+    this.daysRef = document.querySelector(
+      `${selector} span[data-value="days"]`,
+    );
+    this.hoursRef = document.querySelector(
+      `${selector} span[data-value="hours"]`,
+    );
+    this.minsRef = document.querySelector(
+      `${selector} span[data-value="mins"]`,
+    );
+    this.secsRef = document.querySelector(
+      `${selector} span[data-value="secs"]`,
+    );
+  }
 
-const textContent = (days, hours, mins, secs) => {
-  refs.days.textContent = days;
-  refs.hours.textContent = hours;
-  refs.mins.textContent = mins;
-  refs.secs.textContent = secs;
-};
+  textContent = (days, hours, mins, secs) => {
+    timer.daysRef.textContent = days;
+    timer.hoursRef.textContent = hours;
+    timer.minsRef.textContent = mins;
+    timer.secsRef.textContent = secs;
+  };
 
-const countingTime = time => {
-  const days = pad(Math.floor(time / (1000 * 60 * 60 * 24)));
-  const hours = pad(
-    Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-  );
-  const mins = pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
-  const secs = pad(Math.floor((time % (1000 * 60)) / 1000));
+  countingTime() {
+    const time = this.targetDate - Date.now();
+    const days = Math.floor(time / (1000 * 60 * 60 * 24));
+    const hours = this.pad(
+      Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+    );
+    const mins = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
+    const secs = this.pad(Math.floor((time % (1000 * 60)) / 1000));
+    this.textContent(days, hours, mins, secs);
+  }
 
-  textContent(days, hours, mins, secs);
-};
+  pad(value) {
+    return String(value).padStart(2, '0');
+  }
 
-function pad(value) {
-  return String(value).padStart(2, '0');
+  init() {
+    setInterval(() => {
+      this.countingTime();
+    }, 1000);
+  }
 }
 
-setInterval(() => {
-  const targetDate = new Date('Feb 01, 2021');
-  const currentTime = Date.now();
-  const time = targetDate - currentTime;
-  countingTime(time);
-}, 1000);
+const timer = new CountdownTimer('#timer-1', new Date('Feb 01, 2021'));
+timer.init();
